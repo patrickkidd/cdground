@@ -4,7 +4,7 @@ on:
 
 jobs:
   cache-test:
-    runs-on: ubuntu-latest
+    runs-on: macos-12
 
     steps:
       - uses: actions/checkout@v2
