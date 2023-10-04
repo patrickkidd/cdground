@@ -3,8 +3,8 @@ on:
     branches: [ main ]
 
 jobs:
-  build-osx:
-    runs-on: macos-12
+  cache-test:
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -14,7 +14,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./output
-          key: cache-1
+          key: cache-2
 
 
       - name: Populate Cache
