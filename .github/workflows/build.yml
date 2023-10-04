@@ -1,0 +1,28 @@
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-osx:
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Cache
+        id: setup-cache
+        uses: actions/cache@v2
+        with:
+          path: ./output
+          key: cache-1
+
+
+      - name: Populate Cache
+        if: steps.setup-cache.outputs.cache-hit != 'true'
+        run: |
+          ./go.sh
+      
+      - name: Read Cache
+        run: |
+          cat ./output/buffer
+
