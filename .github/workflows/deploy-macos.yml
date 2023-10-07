@@ -89,7 +89,23 @@ jobs:
     # #     dir:          ${{ runner.temp }}
     # #     modules:      qtcore qtgui qtwidgets qtprintsupport qtnetwork qtmacextras qtqml qtquick qtquickwidgets
     # #     setup-python: false
-  
+
+    - name: Import certificates and profiles into keychain
+      run: |
+        # Encrypt files
+        openssl aes-256-cbc -k ${{ secrets.ENCRYPTION_PASSWORD }} -in familydiagram/.github/secrets/Certificates.p12.enc -out familydiagram/.github/secrets/Certificates.p12 -d
+        openssl aes-256-cbc -k ${{ secrets.ENCRYPTION_PASSWORD }} -in familydiagram/.github/secrets/Family_Diagram_Distribution_Developer_ID.provisionprofile.enc -out .github/secrets/Family_Diagram_Distribution_Developer_ID.provisionprofile -d
+
+        KEYCHAIN=build.keychain
+        KEYCHAIN_PASSWORD=${{ secrets.ENCRYPTION_PASSWORD }}
+
+        # Create keychain
+        security create-keychain -p $KEYCHAIN_PASSWORD $KEYCHAIN
+        security default-keychain -s $KEYCHAIN
+        security unlock-keychain -p $KEYCHAIN_PASSWORD $KEYCHAIN
+        security import familydiagram/.github/secrets/Certificates.p12 -k $KEYCHAIN -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple: -s -k $KEYCHAIN_PASSWORD $KEYCHAIN
+
     - name: Build app
       run: |
         cd familydiagram && pipenv run bin/build.sh osx-release
