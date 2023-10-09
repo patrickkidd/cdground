@@ -28,7 +28,7 @@ jobs:
         id: cache-sysroot
         uses: actions/cache@v2
         with:
-          path: ./sysroot/sysroot-macos-64
+          path: ./sysroot-macos-64
           key: sysroot-macOS-cdground-1
 
 
@@ -38,4 +38,4 @@ jobs:
           echo "/usr/local/opt/qt@5/bin" >> $GITHUB_PATH
           wget -L "https://www.zlib.net/fossils/zlib-1.2.11.tar.gz" -P ./sysroot/
           which qmake
-          pipenv run pyqtdeploy-sysroot --target macos-64 --verbose sysroot/sysroot.toml
+          pipenv run pyqtdeploy-sysroot --target macos-64 --verbose sysroot.toml
