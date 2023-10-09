@@ -1,0 +1,41 @@
+on:
+  push:
+    branches: [ main ]
+  
+jobs:
+  cache-test:
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.4
+          cache: 'pipenv'
+
+      - run: |
+          pip install pipenv
+          pipenv install
+
+      - name: brew install qt@5
+        run: |
+          brew install qt@5
+          echo "/usr/local/opt/qt@5/bin" >> $GITHUB_PATH
+
+      - name: Cache sysroot
+        id: cache-sysroot
+        uses: actions/cache@v2
+        with:
+          path: ./sysroot/sysroot-macos-64
+          key: sysroot-macOS-cdground-1
+
+
+      - name: Build sysroot
+        if: steps.cache-sysroot.outputs.cache-hit != 'true'
+        run: |
+          echo "/usr/local/opt/qt@5/bin" >> $GITHUB_PATH
+          wget -L "https://www.zlib.net/fossils/zlib-1.2.11.tar.gz" -P ./sysroot/
+          which qmake
+          pipenv run pyqtdeploy-sysroot --target macos-64 --verbose sysroot/sysroot.toml
